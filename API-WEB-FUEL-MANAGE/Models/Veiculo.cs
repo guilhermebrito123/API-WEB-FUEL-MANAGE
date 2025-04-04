@@ -24,5 +24,7 @@ namespace API_WEB_FUEL_MANAGE.Models
 
         //Eu não preciso de um campo Links que armazene os valores dos LinksDto do objeto, pois ao herdar da classe LinkHATEOS, a classe Veiculo automaticamente já possui esse campo, mas ela não sera aramzenada no bd
 
+        public ICollection<VeiculoUsuarios> Usuarios { get; set; }  
+
     }
 }
