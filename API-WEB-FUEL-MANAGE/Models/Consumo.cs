@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace API_WEB_FUEL_MANAGE.Models
 {
     [Table("Consumos")]
-    public class Consumo
+    public class Consumo : LinkHATEOS
     {
         [Key]
         public int Id { get; set; }
@@ -22,7 +22,7 @@ namespace API_WEB_FUEL_MANAGE.Models
 
         public Veiculo Veiculo { get; set; }
 
-
+        //Eu não preciso de um campo Links que armazene os valores dos LinksDto do objeto, pois ao herdar da classe LinkHATEOS, a classe Consumo automaticamente já possui esse campo. Ela não será controlada no database
     }
 
     public enum TipoCombustivel

@@ -46,6 +46,7 @@ namespace API_WEB_FUEL_MANAGE.Controllers
 
             if(model == null) return NotFound();
 
+            GerarLinks(model);
             return Ok(model);
         }
 
@@ -77,6 +78,14 @@ namespace API_WEB_FUEL_MANAGE.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private void GerarLinks(Veiculo model)
+        {
+            //Não há porque colocar o método POST porque são informações de manipulação de dados de um objeto, eu posso recuperar, deletar ou atualizar o objeto específico. Não posso "postar" o objeto específico já cadastrado.
+            model.Links.Add(new LinkDto(model.Id, Url.ActionLink(), rel: "self", metodo: "GET"));
+            model.Links.Add(new LinkDto(model.Id, Url.ActionLink(), rel: "update", metodo: "PUT"));
+            model.Links.Add(new LinkDto(model.Id, Url.ActionLink(), rel: "delete", metodo: "Delete"));
         }
     }
 }
