@@ -7,11 +7,11 @@ namespace API_WEB_FUEL_MANAGE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VeiculosController : ControllerBase
+    public class ConsumosController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public VeiculosController(AppDbContext context)
+        public ConsumosController(AppDbContext context)
         {
             _context = context;
         }
@@ -19,49 +19,44 @@ namespace API_WEB_FUEL_MANAGE.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            var model = await _context.Veiculos.ToListAsync();
+            var model = await _context.Consumos.ToListAsync();
 
             return Ok(model);//Esse método retorna o status 200
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(Veiculo model)
+        public async Task<ActionResult> Create(Consumo model)
         {
-            if(model.AnoFabricacao <= 0 || model.AnoModelo <= 0)
-            {
-                return BadRequest(new {message = "Ano de fabricação e ano de modelo são obrigatórios devem ser maiores que 0"});
-            }
-
-            _context.Veiculos.Add(model);
+            _context.Consumos.Add(model);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetById", new {id = model.Id}, model);//O método createdataction serve para retornar o status 201 "Created". no cabeçalho da resposta, aparece o caminho para acessar as informações do veiculo cadastrado
+            return CreatedAtAction("GetById", new { id = model.Id }, model);//O método createdataction serve para retornar o status 201 "Created". no cabeçalho da resposta, aparece o caminho para acessar as informações do veiculo cadastrado
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {
-            var model = await _context.Veiculos.Include(t => t.Consumos)//Para recuperar o array Consumos relacionado ao veículo específico, aso contrário retorna como null
+            var model = await _context.Consumos
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if(model == null) return NotFound();
+            if (model == null) return NotFound();
 
             return Ok(model);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, Veiculo model)
+        public async Task<ActionResult> Update(int id, Consumo model)
         {
-            if(id != model.Id) return BadRequest();
+            if (id != model.Id) return BadRequest();
 
-            var modelDb = await _context.Veiculos.AsNoTracking().//Utilizamos o AsNoTracking para desvincular o monitoramento de dados feitos no modelDb,
+            var modelDb = await _context.Consumos.AsNoTracking().//Utilizamos o AsNoTracking para desvincular o monitoramento de dados feitos no modelDb,
                 FirstOrDefaultAsync(c => c.Id == id);//fazendo apenas o processo de leitura, como apenas quero verificar se existe dados do id = n, só preciso da função de leitura, não preciso monitorá-los
                                                      //(é mais ou menos isso)
 
 
             if (modelDb == null) return NotFound();
 
-            _context.Veiculos.Update(model);
+            _context.Consumos.Update(model);
             await _context.SaveChangesAsync();//É aqui onde eu atualizo os dados
             return NoContent();//Não quero retornar nada.
         }
@@ -69,11 +64,11 @@ namespace API_WEB_FUEL_MANAGE.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var model = await _context.Veiculos.FindAsync(id);
+            var model = await _context.Consumos.FindAsync(id);
 
-            if(model == null) return NotFound();
+            if (model == null) return NotFound();
 
-            _context.Veiculos.Remove(model);
+            _context.Consumos.Remove(model);
             await _context.SaveChangesAsync();
 
             return NoContent();
