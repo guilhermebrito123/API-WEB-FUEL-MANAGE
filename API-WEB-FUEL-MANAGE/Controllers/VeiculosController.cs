@@ -42,6 +42,7 @@ namespace API_WEB_FUEL_MANAGE.Controllers
         public async Task<ActionResult> GetById(int id)
         {
             var model = await _context.Veiculos.Include(t => t.Consumos)//Para recuperar o array Consumos relacionado ao veículo específico, aso contrário retorna como null
+                .Include(t => t.Usuarios).ThenInclude(t => t.Usuario)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if(model == null) return NotFound();
@@ -86,6 +87,36 @@ namespace API_WEB_FUEL_MANAGE.Controllers
             model.Links.Add(new LinkDto(model.Id, Url.ActionLink(), rel: "self", metodo: "GET"));
             model.Links.Add(new LinkDto(model.Id, Url.ActionLink(), rel: "update", metodo: "PUT"));
             model.Links.Add(new LinkDto(model.Id, Url.ActionLink(), rel: "delete", metodo: "Delete"));
+        }
+
+        //Funcionalidade de adicionar um usuário a um veículo em questão:
+
+        [HttpPost("{id}/usuarios")]//Posso fazer assim para quando for associar um recurso a outro. Esse id é do veículo
+        public async Task<ActionResult> AddUsuario(int id, VeiculoUsuarios model)//Para esse id passado, estou associando a um usuário utilizando o VeiculoUsuarios
+        {
+            if(id != model.VeiculoId) return BadRequest();
+
+            _context.VeiculosUsuarios.Add(model);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetById", new { id = model.VeiculoId }, model);
+        }//No parâmetro "GetById" passado para a função CreatedAtAction, eu quero visualizar os dados dos usuários que estão associados a esse veículo
+         //Então adiciono .Include(t => t.Usuarios).ThenInclude(t => t.Usuario) no método GetById, onde Usuarios é uma tabela do tipo
+         //VeiculoUsuarios, onde eu só tenho a informação do Id do usuário associado ao veículo. Caso queira adicionar outras informações, faço o ThenInclude(t => t.usuario)
+
+        //Remover associação de usuário ao veículo:
+
+        [HttpDelete("{id}/usuarios/{usuarioId}")]
+        public async Task<ActionResult> DeleteUsuario(int id, int usuarioId)
+        {
+            var model = await _context.VeiculosUsuarios.Where(c => c.VeiculoId == id && c.UsuarioId == usuarioId)
+            .FirstOrDefaultAsync();
+
+            if(model == null) return NotFound();
+
+            _context.VeiculosUsuarios.Remove(model);    
+            await _context.SaveChangesAsync();
+            return NoContent();
+
         }
     }
 }
