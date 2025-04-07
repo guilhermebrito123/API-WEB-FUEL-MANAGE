@@ -1,10 +1,12 @@
 ﻿using API_WEB_FUEL_MANAGE.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_WEB_FUEL_MANAGE.Controllers
 {
+    [Authorize]//Agora todas as minhas roas do meu controlador só são acessíveis por autenticação
     [Route("api/[controller]")]
     [ApiController]
     public class VeiculosController : ControllerBase
